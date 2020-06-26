@@ -111,6 +111,12 @@ namespace xsext
             {
                 //main operation
                 Target target = GetTarget();
+                if (target == null || target.User.Length == 0 || target.User == "<not logged in>")
+                {
+                    Console.WriteLine("Not logged in.");
+                    return;
+                }
+
                 Console.WriteLine("");
                 Console.WriteLine("delete-workspace-services");
                 Console.WriteLine("---------------");
@@ -204,6 +210,12 @@ namespace xsext
             {
                 //main operation
                 Target target = GetTarget();
+                if (target == null || target.User.Length == 0 || target.User == "<not logged in>")
+                {
+                    Console.WriteLine("Not logged in.");
+                    return;
+                }
+
                 Console.WriteLine("");
                 Console.WriteLine("delete-all-workspace-services");
                 Console.WriteLine("---------------");
@@ -244,6 +256,11 @@ namespace xsext
                 List<XSAService> filteredServices = new List<XSAService>();
                 foreach (var user in users)
                 {
+                    if (user.User.Length == 0)
+                    {
+                        //skip if no name returned.
+                        continue;
+                    }
                     filteredServices.AddRange(filteredServicesWhitelist.Where(x => x.Name.StartsWith(user.User)));
                 }
 
