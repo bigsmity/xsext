@@ -4,6 +4,7 @@ A command line tool for performing maintenance tasks for xsa via xs cli. This en
 
 ## Setup:
 * Install the xs cli application as per instructions
+* Install dotnetcore3.1 runtime https://dotnet.microsoft.com/download/dotnet-core/3.1
 * Add xsext.exe to your system path
 
 ## Usage:
