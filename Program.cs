@@ -79,7 +79,7 @@ namespace xsext
                 var firstParam = args[1].Trim();
                 if (firstParam.StartsWith("whitelist"))
                 {
-                    var whitelistRegex = "whitelist=\\[[a-zA-Z0-9,]*[a-zA-Z0-9]*\\]";
+                    var whitelistRegex = "whitelist=\\[[a-zA-Z0-9\\-_,]*[a-zA-Z0-9\\-_]*\\]";
                     bool match = Regex.IsMatch(firstParam, whitelistRegex);
                     if (!match)
                     {
@@ -178,7 +178,7 @@ namespace xsext
                 var firstParam = args[1].Trim();
                 if (firstParam.StartsWith("whitelist"))
                 {
-                    var whitelistRegex = "whitelist=\\[[a-zA-Z0-9,]*[a-zA-Z0-9]*\\]";
+                    var whitelistRegex = "whitelist=\\[[a-zA-Z0-9\\-_,]*[a-zA-Z0-9\\-_]*\\]";
                     bool match = Regex.IsMatch(firstParam, whitelistRegex);
                     if (!match)
                     {
