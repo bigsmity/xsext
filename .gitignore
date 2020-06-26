@@ -5,4 +5,4 @@
 /.vs/xsext/v16
 /.vs
 /obj
-/bin/Debug/netcoreapp3.1
+/xsext.csproj.user
