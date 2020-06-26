@@ -50,14 +50,14 @@ delete-workspace-services complete.
 ### xsext delete-workspace-services
 Will delete all services prepended with the current logged in username.
 
-Params:
+Optional params:
 
 whitelist=[ServiceNameSearchTerm1,ServiceNameSearchTerm2]
 
 ### xsext delete-all-workspace-services
 Will delete all services prepended with any existing username.
 
-Params:
+Optional params:
 
 whitelist=[ServiceNameSearchTerm1,ServiceNameSearchTerm2]
 
