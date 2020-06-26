@@ -14,25 +14,31 @@ A command line tool for performing maintenance tasks for xsa via xs cli. This en
 
 ### Eg:
 
-xs login -a https://hxehost:39030 -u XSA_DEV -p password -o HANAExpress -s development --skip-ssl-validation
-xsext delete-workspace-services
+* xs login -a https://hxehost:39030 -u XSA_DEV -p password -o HANAExpress -s development --skip-ssl-validation
+* xsext delete-workspace-services
 
 ### Output:
 
 delete-workspace-services
+
 https://hxehost:39030 (API version: 1)
+
 XSA_DEV
+
 HANAExpress
+
 development
+
 
 1 services found for user XSA_DEV.
 
 XSA_DEV-mh6o91onz1rdnfgf-TestApp1-TestApp1_hdi_db
 
 Deleting service instance "XSA_DEV-mh6o91onz1rdnfgf-TestApp1-TestApp1_hdi_db"...
-  delete succeeded
-OK
 
+  delete succeeded
+
+OK
 
 
 delete-workspace-services complete.
@@ -43,12 +49,16 @@ delete-workspace-services complete.
 
 ### xsext delete-workspace-services
 Will delete all services prepended with the current logged in username.
+
 Params:
+
 whitelist=[ServiceNameSearchTerm1,ServiceNameSearchTerm2]
 
 ### xsext delete-all-workspace-services
 Will delete all services prepended with any existing username.
+
 Params:
+
 whitelist=[ServiceNameSearchTerm1,ServiceNameSearchTerm2]
 
 
