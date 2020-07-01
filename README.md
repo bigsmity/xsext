@@ -61,5 +61,9 @@ Optional params:
 
 whitelist=[ServiceNameSearchTerm1,ServiceNameSearchTerm2]
 
+### xsext delete-mta-ops-errors
+Will abort all DEPLOY and UNDEPLOY mta operations in an error state cerated by the current logged in username.
 
+### xsext delete-all-mta-ops-errors
+Will abort all DEPLOY and UNDEPLOY mta operations in an error state.
 
