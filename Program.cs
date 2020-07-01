@@ -39,6 +39,18 @@ namespace xsext
                                 DeleteAllWorkspaceServices(args);
                                 break;
                             }
+                        case "delete-mta-ops-errors":
+                        case "dmoe":
+                            {
+                                DeleteMtaOpsErrors(args);
+                                break;
+                            }
+                        case "delete-all-mta-ops-errors":
+                        case "damoe": 
+                            {
+                                DeleteAllMtaOpsErrors(args);
+                                break;
+                            }
                         default:
                             {
                                 PrintInstructions();
@@ -188,7 +200,7 @@ namespace xsext
                 else
                 {
                     returnValue.Add($"Parameter invalid: {firstParam}");
-                    
+
                 }
             }
 
@@ -228,7 +240,7 @@ namespace xsext
                 List<XSAService> services = GetServices();
                 List<string> whitelist = GetWhitelist(args);
                 List<XSAService> filteredServicesWhitelist = new List<XSAService>();
-                
+
 
                 if (whitelist.Count > 0)
                 {
@@ -285,6 +297,163 @@ namespace xsext
                 Console.WriteLine("delete-all-workspace-services complete.");
 
             }
+        }
+
+        private static void DeleteMtaOpsErrors(string[] args)
+        {
+            //main operation
+            Target target = GetTarget();
+            if (target == null || target.User.Length == 0 || target.User == "<not logged in>")
+            {
+                Console.WriteLine("Not logged in.");
+                return;
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("delete-mta-ops-errors");
+            Console.WriteLine("---------------");
+            Console.WriteLine(target.APIEndpoint);
+            Console.WriteLine(target.User);
+            Console.WriteLine(target.Org);
+            Console.WriteLine(target.Space);
+            Console.WriteLine("");
+
+            List<XSAMtaOperation> services = GetMtaOps();
+            List<XSAMtaOperation> filteredMtaOps = new List<XSAMtaOperation>();
+
+            filteredMtaOps = filteredMtaOps.Where(x => x.StartedBy == target.User && (x.Type == "DEPLOY" || x.Type == "UNDEPLOY")).ToList();
+
+            Console.WriteLine($"{filteredMtaOps.Count} mta-ops found for user {target.User} with error status.");
+            Console.WriteLine("");
+
+            foreach (var operation in filteredMtaOps)
+            {
+                Console.WriteLine($"{operation.Id} {operation.Type} {operation.MtaId} {operation.Status} {operation}");
+                string result = AbortMtaOp(operation.Id, operation.Type);
+                Console.WriteLine(result);
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("delete-mta-ops-errors complete.");
+
+        }
+
+        private static void DeleteAllMtaOpsErrors(string[] args)
+        {
+            //main operation
+            Target target = GetTarget();
+            if (target == null || target.User.Length == 0 || target.User == "<not logged in>")
+            {
+                Console.WriteLine("Not logged in.");
+                return;
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("delete-all-mta-ops-errors");
+            Console.WriteLine("---------------");
+            Console.WriteLine(target.APIEndpoint);
+            Console.WriteLine(target.User);
+            Console.WriteLine(target.Org);
+            Console.WriteLine(target.Space);
+            Console.WriteLine("");
+
+            List<XSAMtaOperation> services = GetMtaOps();
+            List<XSAMtaOperation> filteredMtaOps = new List<XSAMtaOperation>();
+
+            filteredMtaOps = filteredMtaOps.Where(x => x.Type == "DEPLOY" || x.Type == "UNDEPLOY").ToList();
+
+            Console.WriteLine($"{filteredMtaOps.Count} mta-ops found with error status.");
+            Console.WriteLine("");
+
+            foreach (var operation in filteredMtaOps)
+            {
+                Console.WriteLine($"{operation.Id} {operation.Type} {operation.MtaId} {operation.Status} {operation}");
+                string result = AbortMtaOp(operation.Id, operation.Type);
+                Console.WriteLine(result);
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("delete-all-mta-ops-errors complete.");
+
+        }
+
+        private static List<XSAMtaOperation> GetMtaOps()
+        {
+            string command = "xs mta-ops";
+            string cmdResult = RunCommand(command);
+
+            List<XSAMtaOperation> mtaOps = new List<XSAMtaOperation>();
+            List<string> cmdResults = cmdResult.Split(Environment.NewLine).ToList();
+            List<string> filteredResults = cmdResults.Skip(4).ToList();
+            foreach (var result in filteredResults)
+            {
+                if (result != string.Empty)
+                {
+                    XSAMtaOperation mtaOp = new XSAMtaOperation();
+                    string[] entries = result.Split("  ");
+                    mtaOp.Id = entries[0];
+                    mtaOp.Type = entries[1];
+                    mtaOp.MtaId = entries[2];
+                    mtaOp.Status = entries[3];
+                    mtaOp.StartedAt = entries[4];
+                    mtaOp.StartedBy = entries[5];
+                    mtaOps.Add(mtaOp);
+                }
+            }
+            return mtaOps;
+        }
+
+        private static List<XSAApp> GetApps()
+        {
+            string command = "xs apps";
+            string cmdResult = RunCommand(command);
+
+            List<XSAApp> apps = new List<XSAApp>();
+            List<string> cmdResults = cmdResult.Split(Environment.NewLine).ToList();
+            List<string> filteredResults = cmdResults.Skip(6).ToList();
+            foreach (var result in filteredResults)
+            {
+                if (result != string.Empty)
+                {
+                    XSAApp app = new XSAApp();
+                    string[] entries = result.Split(" ");
+                    app.Name = entries[0];
+                    app.RequestedState = entries[1];
+                    app.Instances = entries[2];
+                    app.Memory = entries[3];
+                    app.Disk = entries[4];
+                    app.Alerts = entries[5] == "<none>" || entries[5].StartsWith("http") ? "" : entries[5];
+                    app.Urls = entries[5] == "<none>" || entries[5].StartsWith("http") ? entries[5] : entries[6];
+                    apps.Add(app);
+                }
+            }
+            return apps;
+        }
+
+        private static List<XSARoute> GetRoutes()
+        {
+            string command = "xs routes";
+            string cmdResult = RunCommand(command);
+
+            List<XSARoute> routes = new List<XSARoute>();
+            List<string> cmdResults = cmdResult.Split(Environment.NewLine).ToList();
+            List<string> filteredResults = cmdResults.Skip(3).ToList();
+            foreach (var result in filteredResults)
+            {
+                if (result != string.Empty)
+                {
+                    XSARoute route = new XSARoute();
+                    string[] entries = result.Split(" ");
+                    route.Name = entries[0];
+                    route.Domain = entries[1];
+                    route.Port = entries[2];
+                    route.Path = entries[3];
+                    route.Type = entries[4];
+                    route.Apps = entries[5];
+                    routes.Add(route);
+                }
+            }
+            return routes;
         }
 
         private static Target GetTarget()
@@ -365,6 +534,14 @@ namespace xsext
             return users;
         }
 
+        private static string AbortMtaOp(string mtaOpId, string opType)
+        {
+            Thread.Sleep(500);
+            string command = $"xs {opType.ToLower()} -i {mtaOpId} -a abort";
+            string cmdResult = RunCommand(command);
+            return cmdResult;
+        }
+
         private static string DeleteService(string serviceName)
         {
             Thread.Sleep(500);
@@ -422,8 +599,11 @@ namespace xsext
             Console.WriteLine("");
             Console.WriteLine("commands:");
             Console.WriteLine("------------------------------------");
-            Console.WriteLine("delete-workspace-services | dws | optional: whitelist=[matchStr1,matchStr2...]");
-            Console.WriteLine("delete-all-workspace-services | daws | optional: whitelist=[matchStr1,matchStr2...]");
+            Console.WriteLine("delete-workspace-services | dws | optional param: whitelist=[matchStr1,matchStr2...]");
+            Console.WriteLine("delete-all-workspace-services | daws | optional param: whitelist=[matchStr1,matchStr2...]");
+            Console.WriteLine("delete-mta-ops-errors | dmoe");
+            Console.WriteLine("delete-all-mta-ops-errors | damoe");
+            Console.WriteLine("------------------------------------");
             Console.WriteLine("");
 
         }
