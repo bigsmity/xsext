@@ -321,7 +321,7 @@ namespace xsext
             List<XSAMtaOperation> services = GetMtaOps();
             List<XSAMtaOperation> filteredMtaOps = new List<XSAMtaOperation>();
 
-            filteredMtaOps = filteredMtaOps.Where(x => x.StartedBy == target.User && (x.Type == "DEPLOY" || x.Type == "UNDEPLOY")).ToList();
+            filteredMtaOps = filteredMtaOps.Where(x => x.StartedBy == target.User && (x.Type == "DEPLOY" || x.Type == "UNDEPLOY") && x.Status == "ERROR").ToList();
 
             Console.WriteLine($"{filteredMtaOps.Count} mta-ops found for user {target.User} with error status.");
             Console.WriteLine("");
@@ -360,7 +360,7 @@ namespace xsext
             List<XSAMtaOperation> services = GetMtaOps();
             List<XSAMtaOperation> filteredMtaOps = new List<XSAMtaOperation>();
 
-            filteredMtaOps = filteredMtaOps.Where(x => x.Type == "DEPLOY" || x.Type == "UNDEPLOY").ToList();
+            filteredMtaOps = filteredMtaOps.Where(x => (x.Type == "DEPLOY" || x.Type == "UNDEPLOY") && x.Status == "ERROR").ToList();
 
             Console.WriteLine($"{filteredMtaOps.Count} mta-ops found with error status.");
             Console.WriteLine("");
